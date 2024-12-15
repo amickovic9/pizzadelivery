@@ -16,3 +16,12 @@ class User(Base):
 
     def __reppr__(self):
         return f"<User {self.username}"
+    
+    def to_dict(self):
+        return {
+            'id' : self.id,
+            'username' : self.username,
+            'email' : self.username,
+            'is_staff' : self.is_staff,
+            'is_active' : self.is_active
+        }

@@ -16,3 +16,11 @@ class Order(Base):
 
     def __repr__(self):
         return f"<Order {self.id}>"
+    
+    def to_dict(self):
+        return {
+            'id' : self.id,
+            'quantity': self. quantity,
+            'status' : self.status.name,
+            'size' : self.size.name
+        }

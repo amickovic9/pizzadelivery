@@ -36,7 +36,11 @@ def register(user: RegisterRequest, session: Session):
     session.add(new_user)
     session.commit()
     
-    return 201, {"message": "User registered successfully"}
+    return JSONResponse(
+        content={"detail": "User registered successfully"},
+        status_code=201
+    )
+
 
 def login(user: LoginModel, session: Session):
     db_user = session.query(User).filter(User.username == user.username).first()
@@ -84,7 +88,7 @@ def verify_token(authorization: str, session: Session):
         if db_user.token != token:
             raise HTTPException(status_code=401, detail="Invalid token")
         
-        return JSONResponse(status_code=200, content={"username": username})
+        return db_user
     
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")

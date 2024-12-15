@@ -19,3 +19,18 @@ class RegisterRequest(BaseModel):
 class LoginModel(BaseModel):
     username : str
     password : str
+
+class OrderModel(BaseModel):
+    quantity: int
+    order_status: str = "PENDING"
+    pizza_size:str
+
+    class Config:
+        from_attributes = True
+
+class EditUserModel(BaseModel):
+    username: str
+    email: str
+    is_staff : bool
+    is_active : bool
+

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from order_choices import OrderStatusEnum
 
 
 class RegisterRequest(BaseModel):
@@ -34,3 +34,5 @@ class EditUserModel(BaseModel):
     is_staff : bool
     is_active : bool
 
+class OrderStatusUpdate(BaseModel):
+    status: OrderStatusEnum

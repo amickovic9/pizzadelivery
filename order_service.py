@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from database import Session
-from schemas import OrderModel, CancelOrder
+from schemas import OrderModel
 from sqlalchemy.orm import Session
 from auth_service import verify_token
 from order import Order
@@ -17,6 +17,11 @@ def make_order(authorization : str, order:OrderModel, session: Session):
     )
     session.add(new_order)
     session.commit()
+
+    return JSONResponse(
+        content={"detail" : "Success"},
+        status_code=200
+    )
 
 
 def get_my_orders(authorization: str, session: Session):

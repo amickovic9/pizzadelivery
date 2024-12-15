@@ -1,8 +1,9 @@
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
+from order import Order
 from user import User
-from schemas import EditUserModel
+from schemas import EditUserModel, OrderStatusUpdate
 from auth_service import verify_token
 
 
@@ -30,10 +31,48 @@ def edit_user(authorization : str, user_id: int, user : EditUserModel,session: S
     db_user.is_active = user.is_active
     db_user.is_staff = user.is_staff
 
-    session.save(db_user)
+    session.add(db_user)
     session.commit()
 
     return JSONResponse(
         content={"detail" : "Edited!"},
         status_code=200
     )
+
+def delete_user(authorization : str,user_id: int, session: Session):
+    db_user = verify_token(authorization=authorization,session=session)
+
+    if not db_user.is_staff:
+        raise HTTPException(401, "Only admins!")
+    
+    user_for_removing = session.query(User).filter(User.id == user_id).first()
+    
+    session.delete(user_for_removing)
+    session.commit()
+    return JSONResponse(
+        status_code=200,
+        content={"detail" : "Success"}
+    )
+
+
+def change_order_status(authorization: str , order_id: int, status : OrderStatusUpdate, session: Session):
+    user = verify_token(authorization=authorization, session=session)
+    
+    if not user.is_staff:
+        raise HTTPException(401, "Only admins!")
+    
+    order_db = session.query(Order).filter(Order.id == order_id).first()
+
+    if not order_db:
+        raise HTTPException(404, "There is no order with that id!")
+    
+    order_db.status = status.status
+
+    session.add(order_db)
+    session.commit()
+
+    return JSONResponse(
+        status_code=200,
+        content={"detail" : "Success"}
+    )
+    

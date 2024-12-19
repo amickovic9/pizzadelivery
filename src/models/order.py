@@ -1,8 +1,9 @@
-from order_choices import OrderStatusEnum
-from pizza_sizes import Pizza_Size
-from database import Base
+from src.enum.order_choices import OrderStatusEnum
+from src.enum.pizza_sizes import Pizza_Size
+from src.models.database import Base
 from sqlalchemy import Column, Integer, Enum as SQLEnum, ForeignKey
 from sqlalchemy.orm import relationship
+
 
 class Order(Base):
 

@@ -1,9 +1,8 @@
 from fastapi import HTTPException
-from database import Session
 from schemas import OrderModel
 from sqlalchemy.orm import Session
-from auth_service import verify_token
-from order import Order
+from src.services.auth_service import verify_token
+from src.models.order import Order
 from fastapi.responses import JSONResponse
 
 

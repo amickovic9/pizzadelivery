@@ -1,7 +1,7 @@
-from database import Base
+from src.models.database import Base
 from sqlalchemy import Column, Integer, Boolean, Text, String
 from sqlalchemy.orm import relationship
-from order import Order
+from src.models.order import Order
 
 class User(Base):
     __tablename__ = 'users'

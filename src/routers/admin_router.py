@@ -1,14 +1,15 @@
 from fastapi import APIRouter, Request, Depends
-from database import get_db
-import admin_service
+from src.models.database import get_db
+import src.services.admin_service as admin_service
 from schemas import EditUserModel, OrderStatusUpdate
+
 admin_router = APIRouter(
-    prefix= '/admin'
+    prefix= '/admin',
+    tags = ['admin']
 )
 
 @admin_router.get("/all-users")
 async def get_all_users(request: Request,session = Depends(get_db)):
-    print("insisde")
     authorization : str = request.headers.get('Authorization')
     return admin_service.get_all_users(authorization=authorization,session=session)
 

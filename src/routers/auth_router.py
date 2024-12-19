@@ -2,23 +2,25 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from schemas import RegisterRequest, LoginModel
-from database import get_db
-import auth_service
+from src.models.database import get_db
+import src.services.auth_service as auth_service
 
 auth_router = APIRouter(
-    prefix='/auth'
+    prefix='/auth',
+    tags=['auth']
 )
 
-@auth_router.get('/')
-async def hello():
-    return {"message": "Hello World"}
+@auth_router.get('/logout')
+async def logout(request:Request, session = Depends(get_db)):
+    authorization : str = request.headers.get("Authorization")
+    return auth_service.logout(authorization, session)
 
 @auth_router.post("/register")
-async def register_user(user: RegisterRequest, session: Session = Depends(get_db)):  # type: ignore
-    status_code, content = auth_service.register(user, session)
+async def register_user(user: RegisterRequest, session: Session = Depends(get_db)): 
+    auth_service.register(user, session)
     
 @auth_router.post('/login')
-async def login_user(user: LoginModel, session: Session = Depends(get_db)):  # type: ignore
+async def login_user(user: LoginModel, session: Session = Depends(get_db)):  
     status_code, content = auth_service.login(user, session)
     return JSONResponse(
         content=content,
@@ -29,5 +31,3 @@ async def login_user(user: LoginModel, session: Session = Depends(get_db)):  # t
 async def token(request: Request, session: Session = Depends(get_db)):
     authorization: str = request.headers.get("Authorization")
     return auth_service.verify_token(authorization, session)
-
- 

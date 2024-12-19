@@ -1,11 +1,11 @@
 from fastapi.responses import JSONResponse
 from passlib.context import CryptContext
 from jose import jwt, JWTError
+from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from fastapi import HTTPException, status
 from schemas import RegisterRequest, LoginModel
-from database import Session
-from user import User
+from src.models.user import User
 
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
@@ -15,8 +15,10 @@ ALGORITHM = 'HS256'
 def get_password_hash(password):
     return bcrypt_context.hash(password)
 
+
 def verify_password(plain_password, hashed_password):
     return bcrypt_context.verify(plain_password, hashed_password)
+
 
 def register(user: RegisterRequest, session: Session):
     if session.query(User).filter(User.email == user.email).first():
@@ -42,7 +44,7 @@ def register(user: RegisterRequest, session: Session):
     )
 
 
-def login(user: LoginModel, session: Session):
+def login(user: LoginModel, session: Session): 
     db_user = session.query(User).filter(User.username == user.username).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -55,6 +57,7 @@ def login(user: LoginModel, session: Session):
     session.commit()
 
     return status.HTTP_200_OK, {"access_token": access_token}
+
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
@@ -92,3 +95,17 @@ def verify_token(authorization: str, session: Session):
     
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
+    
+
+def logout(authorization: str, session: Session):
+    user = verify_token(authorization=authorization, session= session)
+
+    user.token = None
+    
+    session.add(user)
+
+    return JSONResponse(status_code= 200,
+                        content={"detail": "Success"}
+                        )
+
+

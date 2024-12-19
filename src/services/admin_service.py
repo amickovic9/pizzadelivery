@@ -1,10 +1,10 @@
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from order import Order
-from user import User
+from src.models.order import Order
+from src.models.user import User
 from schemas import EditUserModel, OrderStatusUpdate
-from auth_service import verify_token
+from src.services.auth_service import verify_token
 
 
 def get_all_users(authorization: str, session: Session):
